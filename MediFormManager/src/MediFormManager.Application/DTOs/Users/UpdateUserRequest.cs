@@ -8,6 +8,8 @@ namespace MediFormManager.Application.DTOs.Users
     {
         public string UserName { get; set; } = string.Empty;
 
+        public string? Password { get; set; }
+
         public Guid RoleId { get; set; }
 
         public Guid DepartmentId { get; set; }

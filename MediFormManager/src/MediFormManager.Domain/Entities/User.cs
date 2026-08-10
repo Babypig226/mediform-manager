@@ -13,6 +13,8 @@ namespace MediFormManager.Domain.Entities
 
         public string PasswordHash { get; set; } = string.Empty;
 
+        public Boolean IsActive { get; set; } = true;
+
         public Guid RoleId { get; set; }
 
         public Guid DepartmentId { get; set; }
