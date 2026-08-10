@@ -3,8 +3,8 @@
 **Enterprise Medical Form Lifecycle Management Platform**
 
 Version: 1.0  
-Status: Draft  
-Last Updated: 2026-07-28
+Status: MVP In Progress  
+Last Updated: 2026-08-10
 
 ---
 
@@ -57,15 +57,22 @@ MediForm Manager addresses these limitations through a modular architecture and 
 
 # 4. MVP Scope
 
-- User Authentication
-- Role-based Authorization
+## Implemented Foundation
+
+- User management API (create, read, update, activate/deactivate)
+- Password hashing
+- JWT user authentication
+- JWT Bearer authorization for protected endpoints
+- Swagger / OpenAPI API verification
+- PostgreSQL database with EF Core migrations
+
+## Remaining MVP Scope
+
 - Form Management
 - Form Version Management
+- Role/permission-based authorization
 - Basic Permission Management
-- Swagger API Documentation
-- PostgreSQL Database
-
----
+- WPF management UI
 
 # 5. Technology Stack
 

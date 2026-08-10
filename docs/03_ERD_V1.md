@@ -1,5 +1,7 @@
 # MediForm Manager — ERD V1
 
+**Last Reviewed:** 2026-08-10
+
 > Enterprise Medical Form Lifecycle Management Platform  
 > Database: PostgreSQL  
 > ORM: Entity Framework Core  
@@ -92,6 +94,7 @@ erDiagram
         uuid RoleId FK
         uuid DepartmentId FK
         uuid JobPositionId FK
+        boolean IsActive
         datetime CreatedAt
         string CreatedBy
         datetime UpdatedAt
@@ -393,5 +396,6 @@ Recommended EF Core implementation order:
 - `BaseEntity` is not a database table by itself. It supplies common properties to derived entities.
 - UUID primary keys are used to support distributed environments and reduce key collision risk.
 - Soft deletion is supported through `IsDeleted`.
+- `User.IsActive` controls whether a retained user account can currently authenticate; it is distinct from `IsDeleted`.
 - Entity Framework Core migrations are the source of truth for physical database changes.
 - The Domain project should remain independent from EF Core-specific implementation details.

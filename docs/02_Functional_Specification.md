@@ -1,8 +1,8 @@
 # Functional Specification
 
 **Project:** MediForm Manager  
-**Version:** 1.0 (Draft)  
-**Last Updated:** 2026-07-28
+**Version:** 1.0 (MVP In Progress)  
+**Last Updated:** 2026-08-10
 
 ---
 
@@ -22,23 +22,28 @@ The MVP focuses on delivering a maintainable foundation while keeping the archit
 Provide secure user authentication.
 
 ### Features
-- User login
-- JWT token generation
-- Password hashing
-- Logout (future)
-- Refresh token (future)
+- User login — implemented
+- JWT token generation — implemented
+- Password hashing — implemented
+- Inactive-account login rejection — implemented
+- JWT Bearer protection for API endpoints — implemented
+- Logout — future
+- Refresh token — future
 
 ---
 
 ## 2.2 User Management
 
 ### Features
-- Create users
-- Update users
-- Activate / Deactivate users
-- Department assignment
-- Job position assignment
-- Role assignment
+- Create users — implemented
+- List users / retrieve user by ID — implemented
+- Update users — implemented
+- Activate / Deactivate users — implemented
+- Department assignment — implemented in the user model/API
+- Job position assignment — implemented in the user model/API
+- Role assignment — implemented in the user model/API
+
+User records are retained rather than physically deleted so historical relationships can be preserved.
 
 ---
 
@@ -109,14 +114,22 @@ Permissions include:
 
 # 5. MVP Acceptance Criteria
 
-- User authentication works.
-- JWT authentication is configured.
-- Users can manage forms.
-- Form versions can be created.
-- Swagger endpoints are available.
-- Database schema is created using EF Core Migration.
+## Verified
 
----
+- User authentication works.
+- JWT authentication and Bearer authorization are configured.
+- Invalid passwords and inactive accounts are rejected.
+- Protected endpoints reject unauthenticated requests.
+- Swagger endpoints are available and can send Bearer tokens.
+- User create/read/update flows are verified against PostgreSQL.
+- Database schema is created and updated using EF Core Migration.
+
+## Remaining
+
+- Users can manage forms.
+- Form versions can be created and managed.
+- Role/permission-based authorization is applied to relevant operations.
+- WPF management UI is implemented.
 
 # 6. Out of Scope
 

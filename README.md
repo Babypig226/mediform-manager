@@ -11,31 +11,25 @@ experience maintaining medical information software.
 
 ### Implemented
 
--   Clean Architecture-based solution structure
--   ASP.NET Core Web API
--   .NET 10
--   PostgreSQL
--   Entity Framework Core
--   Domain entities and relationships
--   Fluent API entity configurations
--   EF Core migrations
--   Database schema creation/update
--   Swagger UI
--   User DTOs
--   User repository contract
--   Local development secrets separated from source control
+- Clean Architecture-based solution structure
+- ASP.NET Core Web API with .NET 10
+- PostgreSQL and Entity Framework Core
+- Domain entities, relationships, Fluent API configurations, and EF Core migrations
+- User DTOs, repository contract/implementation, and application service
+- User management API: create, list, get by ID, update, activate/deactivate
+- Password hashing using ASP.NET Core `PasswordHasher`
+- JWT authentication and JWT Bearer authorization
+- Swagger / OpenAPI Bearer authentication support
+- End-to-end API verification against PostgreSQL
+- Local development secrets separated from source control
 
-### MVP In Progress
+### MVP Next Steps
 
--   User repository implementation
--   User service and business rules
--   User management API
--   Administrator bootstrap
--   Password hashing
--   JWT authentication and authorization
--   Form management
--   Form version management
--   Swagger API verification
+- Form management API
+- Form version management
+- Role/permission-based authorization
+- Audit logging
+- WPF management UI
 
 ## Architecture
 
@@ -96,6 +90,16 @@ Repository contracts are defined in Application, while EF Core
 implementations belong to Infrastructure. Application logic depends on
 abstractions rather than database technology.
 
+### Authentication and authorization
+
+User passwords are never stored as plaintext. Passwords are hashed using
+ASP.NET Core `PasswordHasher` before persistence.
+
+Authentication uses signed JWT access tokens. Protected API endpoints use
+ASP.NET Core Bearer authentication and `[Authorize]`.
+
+Inactive users cannot authenticate even when valid credentials are provided.
+
 ### User lifecycle
 
 Users are not physically deleted when they leave the organization
@@ -142,17 +146,17 @@ mediform-manager/
 
 ## Local Configuration
 
-Secrets such as database passwords and future JWT signing keys are not
-stored in the repository.
+Sensitive values such as database passwords and JWT signing keys are not stored in the repository.
+For local development, sensitive configuration is stored using .NET User Secrets.
 
-For local development, sensitive configuration should be stored using
-.NET User Secrets.
+Example configuration keys:
 
-Example configuration key:
-
-``` text
+```text
 ConnectionStrings:DefaultConnection
+Jwt:SecretKey
 ```
+
+Non-sensitive JWT configuration such as issuer and audience may remain in `appsettings.json`.
 
 ## Roadmap
 
