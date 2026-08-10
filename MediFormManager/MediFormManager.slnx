@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="src/MediFormManager.Api/MediFormManager.Api.csproj" />
+  <Project Path="src/MediFormManager.Application/MediFormManager.Application.csproj" />
+  <Project Path="src/MediFormManager.Domain/MediFormManager.Domain.csproj" />
+  <Project Path="src/MediFormManager.Infrastructure/MediFormManager.Infrastructure.csproj" />
+  <Project Path="src/MediFormManager.Wpf/MediFormManager.Wpf.csproj" />
+</Solution>

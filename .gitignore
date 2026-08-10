@@ -1,0 +1,20 @@
+# Visual Studio
+.vs/
+**/bin/
+**/obj/
+
+# User-specific files
+*.user
+*.suo
+
+# Local configuration / secrets
+appsettings.Development.json
+appsettings.Local.json
+
+# Environment variables
+.env
+.env.*
+
+# Logs
+*.log
+logs/
