@@ -4,7 +4,7 @@
 
 Version: 1.0  
 Status: MVP In Progress  
-Last Updated: 2026-08-10
+Last Updated: 2026-08-11
 
 ---
 
@@ -65,14 +65,21 @@ MediForm Manager addresses these limitations through a modular architecture and 
 - JWT Bearer authorization for protected endpoints
 - Swagger / OpenAPI API verification
 - PostgreSQL database with EF Core migrations
+- Form category seed data
+- Form management API (create, list, get by ID, update)
+- Form version management API (create, list by form, get by ID, update status)
+- Form version status validation
+- WPF login flow integrated with the authentication API
+- Authenticated WPF user-list retrieval and DataGrid display
 
 ## Remaining MVP Scope
 
-- Form Management
-- Form Version Management
+- Enforce the single-active-version rule
+- Global API exception handling
+- Form Component Management
 - Role/permission-based authorization
 - Basic Permission Management
-- WPF management UI
+- Expand the WPF management UI to form management
 
 # 5. Technology Stack
 

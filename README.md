@@ -21,15 +21,23 @@ experience maintaining medical information software.
 - JWT authentication and JWT Bearer authorization
 - Swagger / OpenAPI Bearer authentication support
 - End-to-end API verification against PostgreSQL
+- Form category seed data for standard medical form categories
+- Form management API: create, list, get by ID, update
+- Form version management API: create, list by form, get by ID, update status
+- Form version status validation (`Draft`, `Active`, `Archived`)
+- WPF login client integrated with the authentication API
+- JWT reuse for authenticated WPF API requests
+- WPF user list loaded from the protected User API and displayed in a DataGrid
 - Local development secrets separated from source control
 
 ### MVP Next Steps
 
-- Form management API
-- Form version management
+- Enforce the single-active-version rule for form versions
+- Global API exception handling and consistent HTTP error responses
+- Form component management
 - Role/permission-based authorization
 - Audit logging
-- WPF management UI
+- Expand the WPF management UI to form management
 
 ## Architecture
 
@@ -116,6 +124,16 @@ availability.
 Forms and form versions are modeled separately so historical versions
 can be retained while forms evolve.
 
+New form versions are created in `Draft` status. Version status is currently
+restricted to `Draft`, `Active`, or `Archived`. Enforcement of a single active
+version per form is a planned MVP refinement.
+
+### WPF client integration
+
+The WPF client authenticates through the Web API, stores the returned JWT
+access token in the shared API client, and reuses it for protected requests.
+The initial desktop flow supports login and authenticated user-list retrieval.
+
 ## Technology Stack
 
 -   C#
@@ -165,7 +183,7 @@ Non-sensitive JWT configuration such as issuer and audience may remain in `appse
 -   Permission rules
 -   Audit logging
 -   Deployment scheduling
--   WPF management UI
+-   Expanded WPF form management UI
 -   Docker
 -   Cloud deployment
 -   CI/CD

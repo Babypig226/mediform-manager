@@ -2,7 +2,7 @@
 
 **Project:** MediForm Manager  
 **Version:** 1.0 (MVP In Progress)  
-**Last Updated:** 2026-08-10
+**Last Updated:** 2026-08-11
 
 ---
 
@@ -50,24 +50,28 @@ User records are retained rather than physically deleted so historical relations
 ## 2.3 Form Management
 
 ### Features
-- Create medical forms
-- Edit form metadata
-- Search forms
-- Categorize forms
-- Activate / Archive forms
+- Create medical forms — implemented
+- List forms / retrieve form by ID — implemented
+- Edit form metadata — implemented
+- Categorize forms — implemented
+- Activate / deactivate forms — implemented
+- Search forms — future
 
 ---
 
 ## 2.4 Form Version Management
 
 ### Features
-- Create new version
-- View version history
-- Restore previous version
-- Mark active version
+- Create new version — implemented
+- View version history — implemented
+- Retrieve version by ID — implemented
+- Update version status — implemented
+- Restrict status values to `Draft`, `Active`, and `Archived` — implemented
+- Restore previous version — future
+- Mark active version — partially implemented through status update
 
 Business Rule:
-Only one active version is allowed per form.
+Only one active version is allowed per form. Enforcement of this rule is still pending.
 
 ---
 
@@ -83,6 +87,16 @@ Permissions include:
 - Manage Users
 
 ---
+
+## 2.6 WPF Desktop Client
+
+### Features
+- Login through the Web API — implemented
+- Receive and retain JWT access token for the client session — implemented
+- Send Bearer authentication on protected API requests — implemented
+- Retrieve users from the protected User API — implemented
+- Display users in a WPF DataGrid — implemented
+- Form management UI — remaining MVP work
 
 # 3. Non-functional Requirements
 
@@ -122,14 +136,22 @@ Permissions include:
 - Protected endpoints reject unauthenticated requests.
 - Swagger endpoints are available and can send Bearer tokens.
 - User create/read/update flows are verified against PostgreSQL.
+- Form create/read/update flows are verified against PostgreSQL.
+- Form versions can be created, queried, and updated.
+- New form versions default to `Draft`.
+- Invalid form-version status values are rejected by application logic.
+- WPF login works against the authentication API.
+- The WPF client reuses the JWT for protected requests.
+- The WPF client retrieves and displays the user list.
 - Database schema is created and updated using EF Core Migration.
 
 ## Remaining
 
-- Users can manage forms.
-- Form versions can be created and managed.
+- Only one active version is enforced per form.
+- Application validation errors are mapped to consistent HTTP error responses.
 - Role/permission-based authorization is applied to relevant operations.
-- WPF management UI is implemented.
+- Form components are managed.
+- WPF form management UI is implemented.
 
 # 6. Out of Scope
 
