@@ -17,7 +17,6 @@ namespace MediFormManager.Domain.Entities
         public FormCategory? Category { get; set; }
 
         public ICollection<FormVersion> Versions { get; set; } = new List<FormVersion>();
-
-        public ICollection<FormComponent> Components { get; set; } = new List<FormComponent>();
+        
     }
 }

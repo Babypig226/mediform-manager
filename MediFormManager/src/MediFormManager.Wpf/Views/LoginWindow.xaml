@@ -1,0 +1,45 @@
+﻿<Window x:Class="MediFormManager.Wpf.Views.LoginWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="MediForm Manager"
+        Height="420"
+        Width="420"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize">
+
+    <Grid Margin="40">
+        <StackPanel VerticalAlignment="Center">
+
+            <TextBlock Text="MediForm Manager"
+                       FontSize="26"
+                       FontWeight="SemiBold"
+                       HorizontalAlignment="Center"
+                       Margin="0,0,0,30"/>
+
+            <TextBlock Text="Login ID"
+                       Margin="0,0,0,5"/>
+
+            <TextBox Text="{Binding LoginId, UpdateSourceTrigger=PropertyChanged}"
+                     Height="35"
+                     Margin="0,0,0,15"/>
+
+            <TextBlock Text="Password"
+                       Margin="0,0,0,5"/>
+
+            <PasswordBox x:Name="PasswordInput" 
+                         Height="35"
+                         Margin="0,0,0,20"
+                         KeyDown="PasswordInput_KeyDown"/>
+
+            <Button Content="Login"
+                    Click="LoginButton_Click"
+                    Height="40"/>
+
+            <TextBlock Text="{Binding ErrorMessage}"
+                       Margin="0,15,0,0"
+                       HorizontalAlignment="Center"
+                       TextWrapping="Wrap"/>
+
+        </StackPanel>
+    </Grid>
+</Window>

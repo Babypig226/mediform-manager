@@ -43,7 +43,7 @@ namespace MediFormManager.Application.Services
             var token = _tokenService.GenerateToken(user);
             return new LoginResponse
             {
-                AccessTocken = token,
+                AccessToken = token,
                 UserId = user.Id,
                 LoginId = user.LoginId,
                 UserName = user.UserName,

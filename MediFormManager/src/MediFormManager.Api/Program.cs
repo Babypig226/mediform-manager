@@ -47,11 +47,16 @@ builder.Services.AddOpenApi();
 builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
-
 builder.Services.AddScoped<UserService>();
 
 builder.Services.AddScoped<ITokenService, JwtTokenService>();
 builder.Services.AddScoped<AuthService>();
+
+builder.Services.AddScoped<IFormRepository, FormRepository>();
+builder.Services.AddScoped<FormService>();
+
+builder.Services.AddScoped<IFormVersionRepository, FormVersionRepository>();
+builder.Services.AddScoped<FormVersionService>();
 
 builder.Services.AddSwaggerGen(options =>
 {

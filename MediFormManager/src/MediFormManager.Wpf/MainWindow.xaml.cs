@@ -1,24 +1,29 @@
-﻿using System.Text;
+﻿using MediFormManager.Wpf.Services;
+using MediFormManager.Wpf.ViewModels;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
-namespace MediFormManager.Wpf
+namespace MediFormManager.Wpf;
+
+public partial class MainWindow : Window
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
-    public partial class MainWindow : Window
+    private readonly MainViewModel _viewModel;
+
+    public MainWindow(ApiClient apiClient)
     {
-        public MainWindow()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
+
+        var userService = new UserService(apiClient);
+
+        _viewModel = new MainViewModel(userService);
+        DataContext = _viewModel;
+
+        Loaded += MainWindow_Loaded;
+    }
+
+    private async void MainWindow_Loaded(
+        object sender,
+        RoutedEventArgs e)
+    {
+        await _viewModel.LoadUsersAsync();
     }
 }

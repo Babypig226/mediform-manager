@@ -6,7 +6,7 @@ namespace MediFormManager.Application.DTOs.Auth
 {
     public class LoginResponse
     {
-        public string AccessTocken { get; set; } = string.Empty;
+        public string AccessToken { get; set; } = string.Empty;
         public DateTime ExpiresAt { get; set; }
 
         public Guid UserId { get; set; }

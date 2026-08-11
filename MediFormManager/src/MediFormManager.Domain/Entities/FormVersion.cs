@@ -13,5 +13,7 @@ namespace MediFormManager.Domain.Entities
         public string Status { get; set; } = "Draft";
 
         public Form? Form { get; set; }
+
+        public ICollection<FormComponent> Components { get; set; } = new List<FormComponent>();
     }
 }
