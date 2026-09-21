@@ -20,6 +20,13 @@ namespace MediFormManager.Infrastructure.Repositories
                     .ToListAsync();
         }
 
+        public async Task<FormVersion?> GetActiveByFormIdAsync(Guid formId)
+        {
+            return await _context.FormVersions
+                .Where(v => v.FormId == formId && !v.IsDeleted && v.Status == "Active")
+                .FirstOrDefaultAsync();                
+        }
+
         public async Task<FormVersion?> GetByIdAsync(Guid id)
         {
             return await _context.FormVersions
@@ -47,6 +54,20 @@ namespace MediFormManager.Infrastructure.Repositories
             _context.FormVersions.Update(formVersion);
             await _context.SaveChangesAsync();
         }
+
+        public async Task SaveActivationAsync(FormVersion targetVersion, FormVersion? currentActiveVersion)
+        {
+            
+                if (currentActiveVersion != null)
+                {
+                    _context.FormVersions.Update(currentActiveVersion);
+                }
+                _context.FormVersions.Update(targetVersion);
+                await _context.SaveChangesAsync();          
+            
+        }
+
+     
 
     }
 }

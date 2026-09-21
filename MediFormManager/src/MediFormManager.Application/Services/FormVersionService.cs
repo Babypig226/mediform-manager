@@ -110,6 +110,38 @@ namespace MediFormManager.Application.Services
 
         }
 
+        public async Task ActivateAsync(Guid versionId, bool replaceExisting = false) {
+            var formVersion = await _formVersionRepository.GetByIdAsync(versionId);
+            if (formVersion is null)
+            {
+                throw new InvalidOperationException($"FormVersion with Id '{versionId}' not found.");
+            }
+
+            if(formVersion.Status == "Active")
+            {
+                throw new InvalidOperationException($"FormVersion with Id '{versionId}' is already active.");
+            }
+
+            var currentActiveVersion = await _formVersionRepository.GetActiveByFormIdAsync(formVersion.FormId);
+
+            if (currentActiveVersion is not null && !replaceExisting)
+            {              
+                    throw new InvalidOperationException($"Form '{formVersion.FormId}' already has an active version.");
+            }
+
+            var now = DateTime.UtcNow;
+
+            if (currentActiveVersion is not null) {
+                currentActiveVersion.Status = "Archived";
+                currentActiveVersion.UpdatedAt = now;
+            }
+
+            formVersion.Status = "Active";
+            formVersion.UpdatedAt = now;
+            await _formVersionRepository.SaveActivationAsync(formVersion, currentActiveVersion);
+
+        }
+
 
     }
 }

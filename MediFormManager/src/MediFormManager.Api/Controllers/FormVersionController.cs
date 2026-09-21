@@ -58,4 +58,11 @@ public class FormVersionsController : ControllerBase
 
         return Ok(version);
     }
+
+    [HttpPost("{id:guid}/activate")]
+    public async Task<IActionResult> Activate(Guid id, [FromQuery]bool replaceExisting = false)
+    {
+        await _formVersionService.ActivateAsync(id, replaceExisting);
+        return Ok();
+    }
 }
