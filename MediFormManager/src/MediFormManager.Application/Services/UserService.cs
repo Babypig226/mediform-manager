@@ -1,4 +1,5 @@
 ﻿using MediFormManager.Application.DTOs.Users;
+using MediFormManager.Application.Exceptions;
 using MediFormManager.Application.Interfaces.Repositories;
 using MediFormManager.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
@@ -69,7 +70,7 @@ namespace MediFormManager.Application.Services
             // Validate that the LoginId is unique
             if (await _userRepository.ExistsAsync(request.LoginId))
             {
-                throw new InvalidOperationException($"LoginId '{request.LoginId}' already exists.");
+                throw new ConflictException($"LoginId '{request.LoginId}' already exists.");
             }
 
             // Request to Entity
@@ -118,7 +119,7 @@ namespace MediFormManager.Application.Services
             var user = await _userRepository.GetByIdAsync(id);
             if (user == null)
             {
-                throw new InvalidOperationException($"User with ID '{id}' not found.");
+                throw new NotFoundException($"User with ID '{id}' not found.");
             }
             user.UserName = request.UserName;
             user.RoleId = request.RoleId;

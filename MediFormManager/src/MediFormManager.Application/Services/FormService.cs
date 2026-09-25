@@ -1,4 +1,5 @@
 ﻿using MediFormManager.Application.DTOs.Forms;
+using MediFormManager.Application.Exceptions;
 using MediFormManager.Application.Interfaces.Repositories;
 using MediFormManager.Domain.Entities;
 
@@ -52,7 +53,7 @@ public class FormService
     {
         if (await _formRepository.ExistsByCodeAsync(request.FormCode))
         {
-            throw new InvalidOperationException(
+            throw new ConflictException(
                 $"FormCode '{request.FormCode}' already exists.");
         }
 
@@ -104,7 +105,7 @@ public class FormService
         var updatedForm = await _formRepository.GetByIdAsync(id);
 
         if (updatedForm is null) {
-            return null;
+            throw new NotFoundException($"Form ID {id} not Found.");
         }
 
         return new FormDto { 

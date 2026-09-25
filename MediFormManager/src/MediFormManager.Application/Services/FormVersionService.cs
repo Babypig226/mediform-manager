@@ -2,6 +2,7 @@
 using MediFormManager.Application.DTOs.FormVersions;
 using MediFormManager.Application.Interfaces.Repositories;
 using MediFormManager.Domain.Entities;
+using MediFormManager.Application.Exceptions;
 
 namespace MediFormManager.Application.Services
 {
@@ -45,11 +46,11 @@ namespace MediFormManager.Application.Services
             var form = await _formRepository.GetByIdAsync(request.FormId);
 
             if (form is null) {
-                throw new InvalidOperationException($"Form with Id '{request.FormId}' not found.");
+                throw new NotFoundException($"Form with Id '{request.FormId}' not found.");
             }
 
             if (await _formVersionRepository.ExistsVersionAsync(request.FormId, request.Version)) {
-                throw new InvalidOperationException($"Version {request.Version} already exists for this form."); ;
+                throw new ConflictException($"Version {request.Version} already exists for this form.");
             }
 
             var formVersion = new FormVersion
@@ -83,8 +84,7 @@ namespace MediFormManager.Application.Services
 
             if (!allowedStatuses.Contains(request.Status))
             {
-                throw new InvalidOperationException(
-                    $"Invalid status '{request.Status}'.");
+                throw new ValidationException($"Invalid status '{request.Status}'.");
             }
 
             formVersion.Status = request.Status;
@@ -96,7 +96,7 @@ namespace MediFormManager.Application.Services
 
             if (updatedFormVersion is null)
             {
-                return null;
+                throw new NotFoundException($"FormVersion with Id '{id}' not found.");
             }
 
             return new FormVersionDto
@@ -114,19 +114,19 @@ namespace MediFormManager.Application.Services
             var formVersion = await _formVersionRepository.GetByIdAsync(versionId);
             if (formVersion is null)
             {
-                throw new InvalidOperationException($"FormVersion with Id '{versionId}' not found.");
+                throw new NotFoundException($"FormVersion with Id '{versionId}' not found.");
             }
 
             if(formVersion.Status == "Active")
             {
-                throw new InvalidOperationException($"FormVersion with Id '{versionId}' is already active.");
+                throw new ConflictException($"FormVersion with Id '{versionId}' is already active.");
             }
 
             var currentActiveVersion = await _formVersionRepository.GetActiveByFormIdAsync(formVersion.FormId);
 
             if (currentActiveVersion is not null && !replaceExisting)
             {              
-                    throw new InvalidOperationException($"Form '{formVersion.FormId}' already has an active version.");
+                    throw new ConflictException($"Form '{formVersion.FormId}' already has an active version.");
             }
 
             var now = DateTime.UtcNow;

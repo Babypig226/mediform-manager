@@ -1,3 +1,4 @@
+using MediFormManager.Api.ExceptionHandling;
 using MediFormManager.Application.Interfaces.Repositories;
 using MediFormManager.Application.Interfaces.Services;
 using MediFormManager.Application.Services;
@@ -77,8 +78,11 @@ builder.Services.AddSwaggerGen(options =>
             [new OpenApiSecuritySchemeReference(schemeId, document)] = []
         });
 });
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
 
 var app = builder.Build();
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -87,6 +91,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI(); 
 }
+
+app.UseExceptionHandler();
 
 app.UseHttpsRedirection();
 
