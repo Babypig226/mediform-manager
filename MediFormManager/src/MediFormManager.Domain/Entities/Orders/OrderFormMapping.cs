@@ -1,8 +1,10 @@
-﻿using System;
+﻿using MediFormManager.Domain.Entities.Common;
+using MediFormManager.Domain.Entities.Forms;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace MediFormManager.Domain.Entities
+namespace MediFormManager.Domain.Entities.Orders
 {
     public class OrderFormMapping : BaseEntity
     {

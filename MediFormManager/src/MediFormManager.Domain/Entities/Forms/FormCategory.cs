@@ -1,8 +1,9 @@
-﻿using System;
+﻿using MediFormManager.Domain.Entities.Common;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace MediFormManager.Domain.Entities
+namespace MediFormManager.Domain.Entities.Forms
 {
     public class FormCategory : BaseEntity
     {

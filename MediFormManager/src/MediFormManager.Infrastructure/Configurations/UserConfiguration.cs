@@ -1,4 +1,4 @@
-﻿using MediFormManager.Domain.Entities;
+﻿using MediFormManager.Domain.Entities.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

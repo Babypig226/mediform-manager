@@ -1,8 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
-using MediFormManager.Domain.Entities;
+﻿using MediFormManager.Domain.Entities.Components;
+using MediFormManager.Domain.Entities.Departments;
+using MediFormManager.Domain.Entities.Forms;
+using MediFormManager.Domain.Entities.Orders;
+using MediFormManager.Domain.Entities.Rules;
+using MediFormManager.Domain.Entities.Users;
+using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace MediFormManager.Infrastructure.Persistence
 {
@@ -22,6 +25,12 @@ namespace MediFormManager.Infrastructure.Persistence
         public DbSet<FormComponent> FormComponents => Set<FormComponent>();
         public DbSet<MedicalOrder> Orders => Set<MedicalOrder>();
         public DbSet<OrderFormMapping> OrderMappings => Set<OrderFormMapping>();
+
+        public DbSet<ComponentOption> ComponentOptions => Set<ComponentOption>();
+        public DbSet<ComponentRule> ComponentRules => Set<ComponentRule>();
+        public DbSet<RuleCondition> RuleConditions => Set<RuleCondition>();
+        public DbSet<RuleAction> RuleActions => Set<RuleAction>();
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

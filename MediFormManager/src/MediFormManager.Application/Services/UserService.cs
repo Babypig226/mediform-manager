@@ -1,7 +1,7 @@
 ﻿using MediFormManager.Application.DTOs.Users;
 using MediFormManager.Application.Exceptions;
 using MediFormManager.Application.Interfaces.Repositories;
-using MediFormManager.Domain.Entities;
+using MediFormManager.Domain.Entities.Users;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;

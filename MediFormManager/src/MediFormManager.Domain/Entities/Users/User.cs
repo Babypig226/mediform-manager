@@ -1,9 +1,11 @@
-﻿using System;
+﻿using MediFormManager.Domain.Entities.Common;
+using MediFormManager.Domain.Entities.Departments;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 
-namespace MediFormManager.Domain.Entities
+namespace MediFormManager.Domain.Entities.Users
 {
     public class User : BaseEntity
     {

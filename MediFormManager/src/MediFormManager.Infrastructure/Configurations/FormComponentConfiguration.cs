@@ -1,4 +1,4 @@
-﻿using MediFormManager.Domain.Entities;
+﻿using MediFormManager.Domain.Entities.Components;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -13,26 +13,27 @@ public class FormComponentConfiguration
 
         builder.HasKey(x => x.Id);
 
-        builder.Property(x => x.ComponentKey)
-            .HasMaxLength(100)
-            .IsRequired();
-
         builder.Property(x => x.ComponentType)
+            .HasConversion<string>()
             .HasMaxLength(50)
             .IsRequired();
 
-        builder.Property(x => x.Required)
-            .HasDefaultValue(false);
+        builder.Property(x => x.Label)            
+            .HasMaxLength(200);
+        builder.Property(x => x.Placeholder)
+            .HasMaxLength(200);
+        builder.Property(x => x.GroupKey)
+            .HasMaxLength(100);
 
-        builder.HasIndex(x => new
-        {
-            x.FormVersionId,
-            x.ComponentKey
-        })
-        .IsUnique();
+        builder.Property(x => x.IsRequired)
+            .HasDefaultValue(false);
+        builder.Property(x => x.IsDisabled)
+            .HasDefaultValue(false);
+        builder.Property(x => x.IsVisible)
+            .HasDefaultValue(true);
 
         builder.HasOne(x => x.FormVersion)
-            .WithMany()
+            .WithMany(x => x.Components)
             .HasForeignKey(x => x.FormVersionId)
             .OnDelete(DeleteBehavior.Cascade);
     }

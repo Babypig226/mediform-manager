@@ -1,7 +1,7 @@
 ﻿using MediFormManager.Application.DTOs.Forms;
 using MediFormManager.Application.Exceptions;
 using MediFormManager.Application.Interfaces.Repositories;
-using MediFormManager.Domain.Entities;
+using MediFormManager.Domain.Entities.Forms;
 
 namespace MediFormManager.Application.Services;
 

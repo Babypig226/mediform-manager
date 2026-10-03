@@ -1,4 +1,4 @@
-﻿using MediFormManager.Domain.Entities;
+﻿using MediFormManager.Domain.Entities.Forms;
 
 namespace MediFormManager.Application.Interfaces.Repositories
 {

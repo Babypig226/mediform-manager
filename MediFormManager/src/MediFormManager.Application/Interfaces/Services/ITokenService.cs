@@ -1,4 +1,4 @@
-﻿using MediFormManager.Domain.Entities;
+﻿using MediFormManager.Domain.Entities.Users;
 using System;
 using System.Collections.Generic;
 using System.Text;

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MediFormManager.Domain.Entities
+namespace MediFormManager.Domain.Entities.Common
 {
     public abstract class BaseEntity
     {

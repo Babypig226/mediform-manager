@@ -1,5 +1,5 @@
 ﻿using MediFormManager.Application.Interfaces.Services;
-using MediFormManager.Domain.Entities;
+using MediFormManager.Domain.Entities.Users;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;

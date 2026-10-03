@@ -1,5 +1,5 @@
 ﻿using MediFormManager.Application.Interfaces.Repositories;
-using MediFormManager.Domain.Entities;
+using MediFormManager.Domain.Entities.Forms;
 using MediFormManager.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
