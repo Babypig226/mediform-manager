@@ -1,4 +1,5 @@
-﻿using MediFormManager.Application.DTOs.FormVersions;
+﻿using MediFormManager.Application.DTOs.FormSchemas;
+using MediFormManager.Application.DTOs.FormVersions;
 using MediFormManager.Application.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -33,6 +34,12 @@ public class FormVersionsController : ControllerBase
             return NotFound();
 
         return Ok(version);
+    }
+
+    [HttpGet("{id:guid}/schema")]
+    public async Task<ActionResult<FormSchemaDto>> GetSchema(Guid id) {
+        var schema = await _formVersionService.GetSchemaByIdAsync(id);
+        return Ok(schema);
     }
 
     [HttpPost]

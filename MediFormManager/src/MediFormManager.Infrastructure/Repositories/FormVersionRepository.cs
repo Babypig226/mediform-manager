@@ -34,6 +34,18 @@ namespace MediFormManager.Infrastructure.Repositories
                 .FirstOrDefaultAsync(v => v.Id == id && !v.IsDeleted);
         }
 
+        public async Task<FormVersion?> GetSchemaByIdAsync(Guid id)
+        {
+            return await _context.FormVersions
+                .Include(v => v.Components)
+                    .ThenInclude(c => c.Options)
+                .Include(v => v.Rules)
+                    .ThenInclude(r => r.Conditions)
+                .Include(v => v.Rules)
+                    .ThenInclude(r => r.Actions)
+                    .FirstOrDefaultAsync(v => v.Id == id && !v.IsDeleted);
+        }
+
         public async Task<bool> ExistsVersionAsync(Guid formId, int version) {
 
             return await _context.FormVersions

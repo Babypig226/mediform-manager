@@ -8,6 +8,8 @@ namespace MediFormManager.Application.Interfaces.Repositories
         Task<FormVersion?> GetByIdAsync(Guid id);
         Task<FormVersion?> GetActiveByFormIdAsync(Guid id);
 
+        Task<FormVersion?> GetSchemaByIdAsync(Guid id);
+
         Task<bool> ExistsVersionAsync(Guid formId, int version);
         
         Task AddAsync(FormVersion formVersion);
