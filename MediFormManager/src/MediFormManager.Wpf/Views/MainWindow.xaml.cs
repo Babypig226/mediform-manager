@@ -2,7 +2,7 @@
 using MediFormManager.Wpf.ViewModels;
 using System.Windows;
 
-namespace MediFormManager.Wpf;
+namespace MediFormManager.Wpf.Views;
 
 public partial class MainWindow : Window
 {
@@ -13,9 +13,11 @@ public partial class MainWindow : Window
         InitializeComponent();
 
         var userService = new UserService(apiClient);
-
+    
         _viewModel = new MainViewModel(userService);
         DataContext = _viewModel;
+
+        MainContent.Content = new DashboardView();
 
         Loaded += MainWindow_Loaded;
     }
@@ -25,5 +27,17 @@ public partial class MainWindow : Window
         RoutedEventArgs e)
     {
         await _viewModel.LoadUsersAsync();
+    }
+
+    private void UsersButton_Click(object sender, RoutedEventArgs e)
+    {
+        MainContent.Content = new UsersView();
+    }
+
+    private void DashboardButton_Click(
+    object sender,
+    RoutedEventArgs e)
+    {
+        MainContent.Content = new DashboardView();
     }
 }
