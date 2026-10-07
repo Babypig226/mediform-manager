@@ -19,7 +19,7 @@ public partial class MainWindow : Window
 
         MainContent.Content = new DashboardView();
 
-        Loaded += MainWindow_Loaded;
+      
     }
 
     private async void MainWindow_Loaded(
