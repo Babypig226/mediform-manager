@@ -129,8 +129,9 @@ export default function FormDesignerPage({schema} : FormDesignerPageProps) {
                     <h3>Canvas</h3>
 
                     {draftSchema.components.map(component => (
-                        <div
+                        <button
                             key={component.id}
+                            type = "button"
                             className={
                                 selectedComponentId === component.id
                                     ? "designer-component selected"
@@ -142,7 +143,7 @@ export default function FormDesignerPage({schema} : FormDesignerPageProps) {
                                 {component.label ?? component.prompt ?? "Untitled"}
                             </strong>
                             <p>{component.componentType}</p>
-                        </div>
+                        </button>
                     ))}
                 </main>
 
