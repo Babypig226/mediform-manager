@@ -152,3 +152,175 @@ body {
 .radio-option input {
     margin: 0;
 }
+
+.designer-layout {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 1fr) 280px;
+    gap: 16px;
+    margin-top: 20px;
+    align-items: start;
+}
+
+.designer-components,
+.designer-canvas,
+.designer-properties {
+    padding: 16px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    min-height: 360px;
+}
+
+.designer-components {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.designer-components button {
+    padding: 10px;
+    text-align: left;
+    background: white;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.designer-component {
+    padding: 14px;
+    margin-bottom: 10px;
+    background: white;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.designer-component.selected {
+    border: 2px solid #2563eb;
+    background: #eff6ff;
+}
+
+@media (max-width: 800px) {
+    .designer-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+.designer-properties {
+    min-width: 0;
+}
+
+.property-field {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 6px;
+    margin-bottom: 16px;
+    text-align: left;
+}
+
+.property-field label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #475569;
+}
+
+.designer-properties .property-field input {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    padding: 9px 10px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    background: #fff;
+    color: #0f172a;
+    font: inherit;
+}
+
+.property-checkbox {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.designer-properties .property-checkbox input {
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    flex: 0 0 auto;
+}
+
+.designer-components button {
+    overflow-wrap: anywhere;
+}
+
+.designer-components .add-component-button {
+    margin-top: 12px;
+    border: 1px dashed #2563eb;
+    color: #2563eb;
+    background: #eff6ff;
+    text-align: center;
+}
+
+.add-component-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 16px;
+}
+
+.add-component-controls select {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    background: white;
+}
+
+.designer-components .add-component-button {
+    margin-top: 0;
+}
+
+.property-options {
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid #cbd5e1;
+    text-align: left;
+}
+
+.property-option-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.property-option-row input {
+    flex: 1;
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    padding: 8px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+}
+
+.property-option-row button {
+    flex-shrink: 0;
+    padding: 8px;
+    border: 1px solid #dc2626;
+    border-radius: 6px;
+    background: white;
+    color: #dc2626;
+    cursor: pointer;
+}
+
+.designer-canvas .designer-component {
+    display: block;
+    width: 100%;
+    text-align: left;
+    font: inherit;
+}
