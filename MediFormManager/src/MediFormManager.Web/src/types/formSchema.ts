@@ -47,6 +47,7 @@ export interface FormSchema {
     formVersionId : string;
     version : number;
     status : string;
+    updatedAt: string | null;
     components : FormComponent[];
     rules : ComponentRule[];   
 }

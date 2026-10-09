@@ -14,5 +14,6 @@ namespace MediFormManager.Application.DTOs.FormSchemas
         public List<FormComponentDto> Components { get; set; } = new List<FormComponentDto>();
         public List<ComponentRuleDto> Rules { get; set; } = new List<ComponentRuleDto>();
 
+        public DateTime? UpdatedAt { get; set; }
     }
 }

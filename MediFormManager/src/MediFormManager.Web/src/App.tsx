@@ -6,7 +6,7 @@ import "./App.css";
 import FormRuntimePage from "./pages/FormRuntimePage";
 import FormDesignerPage from "./pages/FormDesignerPage";
 
-const FORM_VERSION_ID = "47571803-b7db-4c77-a2b6-61455dcf861c";
+const FORM_VERSION_ID = "08ea1080-1220-4ab3-9c13-6599e1a041bd";
 
 function App() {
     const [loginId, setLoginId] = useState("");
@@ -31,6 +31,45 @@ function App() {
       } catch (err) {
         setError(err instanceof Error ? err.message : "Unknown error");
       }
+    }
+
+    async function handleOpenDesigner() {
+        if (!schema) return;
+
+        try {
+            setError(null);
+
+            const latestSchema = await getFormSchema(schema.formVersionId);
+
+            if (latestSchema.status !== "Draft") {
+                setError("Only Draft form versions can be edited.");
+                return;
+            }
+
+            setSchema(latestSchema);
+            setActivePage("designer");
+        } catch (err) {
+            setError(
+                err instanceof Error ? err.message : "Unknown error"
+            );
+        }
+    }
+
+    async function handleOpenRuntime() {
+        if (!schema) return;
+
+        try {
+            setError(null);
+
+            const latestSchema = await getFormSchema(schema.formVersionId);
+
+            setSchema(latestSchema);
+            setActivePage("runtime");
+        } catch (err) {
+            setError(
+                err instanceof Error ? err.message : "Unknown error"
+            );
+        }
     }
 
     
@@ -64,14 +103,14 @@ function App() {
             <>
                 <nav className="page-navigation">
                     <button
-                        onClick={() => setActivePage("runtime")}
+                        onClick={handleOpenRuntime}
                         disabled={activePage === "runtime"}
                     >
                         Runtime / Test
                     </button>
 
                     <button
-                        onClick={() => setActivePage("designer")}
+                        onClick={handleOpenDesigner}
                         disabled={activePage === "designer"}
                     >
                         Form Designer

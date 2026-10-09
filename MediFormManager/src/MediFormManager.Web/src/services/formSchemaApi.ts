@@ -21,3 +21,32 @@ export async function getFormSchema(id: string): Promise<FormSchema> {
 
     return schema;
 }
+
+export async function saveFormSchema(schema: FormSchema): Promise<void> {
+        const token = sessionStorage.getItem("accessToken");
+
+        if (!token) {
+            throw new Error("Access token not found.");
+        }
+
+        const response = await fetch(
+            `https://localhost:7276/api/FormVersions/${schema.formVersionId}/schema`,
+            {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    expectedUpdatedAt: schema.updatedAt,
+                    components: schema.components
+                })
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error(
+                `Failed to save form schema: ${response.status}`
+            );
+        }
+    }

@@ -1,5 +1,6 @@
 import {useState} from "react";
 import type {FormComponent, FormSchema, ComponentOption } from "../types/formSchema";
+import { getFormSchema, saveFormSchema } from "../services/formSchemaApi";
 
 interface FormDesignerPageProps{
     schema: FormSchema;
@@ -12,6 +13,8 @@ export default function FormDesignerPage({schema} : FormDesignerPageProps) {
     const selectedComponent = draftSchema.components.find(
         component => component.id === selectedComponentId
     );
+    const [isSaving, setIsSaving] = useState(false);
+    const [saveMessage, setSaveMessage] = useState<string | null>(null);
 
     function updateComponent(componentId: string, changes: Partial<FormComponent>){
         setDraftSchema(previous => ({...previous, 
@@ -84,9 +87,43 @@ export default function FormDesignerPage({schema} : FormDesignerPageProps) {
         });
     }
 
+    async function handleSave() {
+            if (isSaving) return;
+
+            setIsSaving(true);
+            setSaveMessage(null);
+
+            try {
+                await saveFormSchema(draftSchema);
+
+                const latestSchema = await getFormSchema(draftSchema.formVersionId);
+
+                setDraftSchema(latestSchema);
+                setSaveMessage("Schema saved successfully.");
+            } catch (err) {
+                setSaveMessage(
+                    err instanceof Error ? err.message : "Save failed."
+                );
+            } finally {
+                setIsSaving(false);
+            }
+        }
+
     return (
         <section className = "designer">
-            <h2>Form Designer</h2>            
+            <div className="designer-header">
+                <h2>Form Designer</h2>
+
+                <button
+                    type="button"
+                    onClick={handleSave}
+                    disabled={isSaving}
+                >
+                    {isSaving ? "Saving..." : "Save Draft"}
+                </button>
+            </div>
+
+            {saveMessage && <p role="status">{saveMessage}</p>}            
 
             <div className="designer-layout">
                 <aside className="designer-components">

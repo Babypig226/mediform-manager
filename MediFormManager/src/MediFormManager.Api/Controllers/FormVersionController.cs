@@ -72,4 +72,12 @@ public class FormVersionsController : ControllerBase
         await _formVersionService.ActivateAsync(id, replaceExisting);
         return Ok();
     }
+
+    [HttpPut("{id:guid}/schema")]
+    public async Task<IActionResult> SaveSchema(Guid id, [FromBody] SaveFormSchemaRequest request)
+    {
+        await _formVersionService.SaveSchemaAsync(id, request);
+
+        return NoContent();
+    }
 }

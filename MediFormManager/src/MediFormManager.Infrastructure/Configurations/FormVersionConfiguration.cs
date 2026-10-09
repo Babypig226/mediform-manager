@@ -20,6 +20,9 @@ public class FormVersionConfiguration
             .HasMaxLength(30)
             .IsRequired();
 
+        builder.Property(v => v.UpdatedAt)
+            .IsConcurrencyToken();
+
         builder.HasIndex(x => new
         {
             x.FormId,

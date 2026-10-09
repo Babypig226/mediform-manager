@@ -1,4 +1,6 @@
-﻿using MediFormManager.Application.Interfaces.Repositories;
+﻿using MediFormManager.Application.Exceptions;
+using MediFormManager.Application.Interfaces.Repositories;
+using MediFormManager.Domain.Entities.Components;
 using MediFormManager.Domain.Entities.Forms;
 using MediFormManager.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
@@ -37,12 +39,13 @@ namespace MediFormManager.Infrastructure.Repositories
         public async Task<FormVersion?> GetSchemaByIdAsync(Guid id)
         {
             return await _context.FormVersions
-                .Include(v => v.Components)
-                    .ThenInclude(c => c.Options)
-                .Include(v => v.Rules)
-                    .ThenInclude(r => r.Conditions)
-                .Include(v => v.Rules)
-                    .ThenInclude(r => r.Actions)
+                .Include(v => v.Components.Where(c => !c.IsDeleted))
+                    .ThenInclude(c => c.Options.Where(o => !o.IsDeleted))
+                .Include(v => v.Rules.Where(r => !r.IsDeleted))
+                    .ThenInclude(r => r.Conditions.Where(c => !c.IsDeleted))
+                .Include(v => v.Rules.Where(r => !r.IsDeleted))
+                    .ThenInclude(r => r.Actions.Where(a => !a.IsDeleted))
+                    .AsSplitQuery()
                     .FirstOrDefaultAsync(v => v.Id == id && !v.IsDeleted);
         }
 
@@ -79,7 +82,40 @@ namespace MediFormManager.Infrastructure.Repositories
             
         }
 
-     
+        public async Task SaveSchemaChangesAsync() {
+         
+            try
+            {                
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                throw new ConflictException("The form version was modified by another user.");
+            }
+        }
+
+        public async Task<bool> AnyComponentIdsExistAsync(IEnumerable<Guid> componentIds)
+        {
+            var ids = componentIds.ToArray();
+
+            return await _context.FormComponents
+                .AnyAsync(c => ids.Contains(c.Id));
+        }
+
+        public async Task<bool> AnyOptionIdsExistAsync(IEnumerable<Guid> optionIds)
+        {
+            var ids = optionIds.ToArray();
+
+            return await _context.ComponentOptions
+                .AnyAsync(o => ids.Contains(o.Id));
+        }
+
+
+        public void AddComponent(FormComponent component)
+        {
+            _context.FormComponents.Add(component);
+        }
+
 
     }
 }
