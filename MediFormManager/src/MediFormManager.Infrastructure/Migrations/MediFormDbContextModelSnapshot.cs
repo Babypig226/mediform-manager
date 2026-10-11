@@ -22,6 +22,93 @@ namespace MediFormManager.Infrastructure.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("MediFormManager.Domain.Entities.Clinical.ComponentDataMapping", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("DataDictionaryId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("FormComponentId")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DataDictionaryId");
+
+                    b.HasIndex("FormComponentId")
+                        .IsUnique()
+                        .HasFilter("\"IsDeleted\" = false");
+
+                    b.ToTable("ComponentDataMappings", (string)null);
+                });
+
+            modelBuilder.Entity("MediFormManager.Domain.Entities.Clinical.DataDictionary", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("DataKey")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("character varying(150)");
+
+                    b.Property<string>("DataType")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<string>("DisplayName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DataKey")
+                        .IsUnique();
+
+                    b.ToTable("DataDictionaries", (string)null);
+                });
+
             modelBuilder.Entity("MediFormManager.Domain.Entities.Components.ComponentOption", b =>
                 {
                     b.Property<Guid>("Id")
@@ -377,6 +464,7 @@ namespace MediFormManager.Infrastructure.Migrations
                         .HasColumnType("character varying(30)");
 
                     b.Property<DateTime?>("UpdatedAt")
+                        .IsConcurrencyToken()
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("UpdatedBy")
@@ -713,6 +801,25 @@ namespace MediFormManager.Infrastructure.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("Users", (string)null);
+                });
+
+            modelBuilder.Entity("MediFormManager.Domain.Entities.Clinical.ComponentDataMapping", b =>
+                {
+                    b.HasOne("MediFormManager.Domain.Entities.Clinical.DataDictionary", "DataDictionary")
+                        .WithMany()
+                        .HasForeignKey("DataDictionaryId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("MediFormManager.Domain.Entities.Components.FormComponent", "FormComponent")
+                        .WithMany()
+                        .HasForeignKey("FormComponentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("DataDictionary");
+
+                    b.Navigation("FormComponent");
                 });
 
             modelBuilder.Entity("MediFormManager.Domain.Entities.Components.ComponentOption", b =>

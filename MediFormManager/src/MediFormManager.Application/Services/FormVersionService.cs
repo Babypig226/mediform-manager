@@ -242,17 +242,7 @@ namespace MediFormManager.Application.Services
             ValidateRuleReferences(version, request);
 
             await ValidateComponentOwnershipAsync(version, request);
-            System.Diagnostics.Debug.WriteLine(
-    $"DB UpdatedAt      : {version.UpdatedAt:O}");
-
-            System.Diagnostics.Debug.WriteLine(
-                $"Request UpdatedAt : {request.ExpectedUpdatedAt:O}");
-
-            System.Diagnostics.Debug.WriteLine(
-                $"DB Ticks          : {version.UpdatedAt?.Ticks}");
-
-            System.Diagnostics.Debug.WriteLine(
-                $"Request Ticks     : {request.ExpectedUpdatedAt?.Ticks}");
+            
             if (version.UpdatedAt != request.ExpectedUpdatedAt)
             {
                 throw new ConflictException(

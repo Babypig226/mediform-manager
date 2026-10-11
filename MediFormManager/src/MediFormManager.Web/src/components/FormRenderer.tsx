@@ -1,8 +1,10 @@
 import {useState} from "react";
-import type { FormComponent, FormSchema, RuleCondition, ComponentRule, RuleAction } from "../types/formSchema";
+import type { FormSchema, RuleCondition, ComponentRule, RuleAction } from "../types/formSchema";
+import { FormField } from "./FormField";
 
 interface FormRendererProps {
     schema: FormSchema;
+     initialValues?: Record<string, string>;
 }
 
 interface ComponentRuntimeState{
@@ -11,82 +13,13 @@ interface ComponentRuntimeState{
     isVisible: boolean;
 }
 
-export function FormRenderer({ schema }: FormRendererProps) {
-    const [values, setValues] = useState<Record<string, string>>({});
+export function FormRenderer({schema, initialValues = {}}:FormRendererProps) {
+    const [values, setValues] = useState<Record<string, string>>(() => ({...initialValues}));
     const [validationErrors, setValidationErrors] = useState<string[]>([]);
     const [hasValidated, setHasValidated] = useState(false);
-    function renderComponent(component: FormComponent, runtimeState: ComponentRuntimeState) {
-        switch (component.componentType) {
-            case "TextInput":
-                return (
-                    <input
-                        type="text"
-                        placeholder={component.placeholder ?? ""}                        
-                        value={values[component.id] ?? component.defaultValue ?? ""}
-                        onChange={(e) => handleValueChange(component.id, e.target.value)}
-                        disabled={runtimeState.isDisabled}
-                    />
-                );
+    
 
-            case "RadioGroup":
-                return (
-                    <div className="radio-group">
-                        {component.options.map(option => (
-                            <label key={option.id} className="radio-option">
-                                <input
-                                    type="radio"
-                                    name={component.id}
-                                    value={option.id}
-                                    checked={values[component.id] === option.id}
-                                    onChange={() => handleValueChange(component.id, option.id)}
-                                    disabled={runtimeState.isDisabled}
-                                />
-                                {option.displayText}
-                            </label>
-                        ))}
-                    </div>
-                );
 
-            case "ComboBox":
-                return (
-                    <select disabled={runtimeState.isDisabled}>
-                        <option value="">Select...</option>
-
-                        {component.options.map(option => (
-                            <option key={option.id} value={option.id}>
-                                {option.displayText}
-                            </option>
-                        ))}
-                    </select>
-                );
-
-            case "DateTimePicker":
-                return (
-                    <input
-                        type="datetime-local"
-                        disabled={runtimeState.isDisabled}
-                    />
-                );
-
-            case "CheckBox":
-                return (
-                    <input
-                        type="checkbox"
-                        disabled={runtimeState.isDisabled}
-                    />
-                );
-
-            case "Label":
-                return <p>{component.prompt}</p>;
-
-            default:
-                return (
-                    <p>
-                        Unsupported component: {component.componentType}
-                    </p>
-                );
-        }
-    }
 
     function handleValueChange(componentId: string, value: string){
         setValues(previousValues =>{
@@ -217,7 +150,11 @@ export function FormRenderer({ schema }: FormRendererProps) {
         const errors: string[] = [];
         schema.components.forEach(component => {
             const runtimeState = runtimeStates[component.id];
-            if(runtimeState.isRequired && (!values[component.id] || values[component.id].trim() === "")){
+            if(  runtimeState.isVisible &&
+                !runtimeState.isDisabled &&
+                runtimeState.isRequired &&
+                !(values[component.id] ?? component.defaultValue ?? "").trim()
+            ){
                 errors.push(`Field "${component.label ?? component.prompt}" is required.`);
             }
         });
@@ -255,36 +192,18 @@ export function FormRenderer({ schema }: FormRendererProps) {
             </div>
 
             <div className="form-body">
-                {schema.components
-                    .filter(component => runtimeStates[component.id]?.isVisible)
-                    .map(component => (
-                        <div
-                            key={component.id}
-                            className="form-field"
-                        >
-                            {(component.label || component.prompt) && (
-                                <label className="field-label">
-                                    {component.label ?? component.prompt}
-
-                                    {runtimeStates[component.id]?.isRequired && (
-                                        <span className="required">
-                                            *
-                                        </span>
-                                    )}
-                                </label>
-                            )}
-
-                            {component.prompt &&
-                                component.label &&
-                                component.prompt !== component.label && (
-                                    <p className="field-prompt">
-                                        {component.prompt}
-                                    </p>
-                                )}
-
-                            {renderComponent(component, runtimeStates[component.id])}
-                        </div>
-                    ))}
+               {schema.components
+                        .filter(component => runtimeStates[component.id]?.isVisible)
+                        .map(component => (
+                            <FormField
+                                key={component.id}
+                                component={component}
+                                value={values[component.id]}
+                                isDisabled={runtimeStates[component.id].isDisabled}
+                                isRequired={runtimeStates[component.id].isRequired}
+                                onValueChange={handleValueChange}
+                            />
+                        ))}
 
                 <button
                     type="button"

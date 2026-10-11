@@ -1,6 +1,7 @@
 using MediFormManager.Api.ExceptionHandling;
 using MediFormManager.Application.Interfaces.Repositories;
 using MediFormManager.Application.Interfaces.Services;
+using MediFormManager.Infrastructure.Services.Clinical;
 using MediFormManager.Application.Services;
 using MediFormManager.Infrastructure.Persistence;
 using MediFormManager.Infrastructure.Repositories;
@@ -35,6 +36,7 @@ builder.Services.AddCors(options => {
             .AllowAnyMethod();
     });
 });
+
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -72,6 +74,12 @@ builder.Services.AddScoped<FormService>();
 
 builder.Services.AddScoped<IFormVersionRepository, FormVersionRepository>();
 builder.Services.AddScoped<FormVersionService>();
+
+builder.Services.AddScoped<IClinicalDataProvider, MockClinicalDataProvider>();
+
+builder.Services.AddScoped<IComponentDataMappingRepository, ComponentDataMappingRepository>();
+
+builder.Services.AddScoped<ClinicalDataService>();
 
 builder.Services.AddSwaggerGen(options =>
 {

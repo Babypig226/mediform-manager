@@ -1,4 +1,5 @@
-﻿using MediFormManager.Domain.Entities.Components;
+﻿using MediFormManager.Domain.Entities.Clinical;
+using MediFormManager.Domain.Entities.Components;
 using MediFormManager.Domain.Entities.Departments;
 using MediFormManager.Domain.Entities.Forms;
 using MediFormManager.Domain.Entities.Orders;
@@ -30,6 +31,11 @@ namespace MediFormManager.Infrastructure.Persistence
         public DbSet<ComponentRule> ComponentRules => Set<ComponentRule>();
         public DbSet<RuleCondition> RuleConditions => Set<RuleCondition>();
         public DbSet<RuleAction> RuleActions => Set<RuleAction>();
+
+        public DbSet<DataDictionary> DataDictionaries => Set<DataDictionary>();
+
+        public DbSet<ComponentDataMapping> ComponentDataMappings
+            => Set<ComponentDataMapping>();
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
