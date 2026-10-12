@@ -1,5 +1,6 @@
 ﻿using MediFormManager.Application.Exceptions;
 using MediFormManager.Application.Interfaces.Repositories;
+using MediFormManager.Domain.Entities.Clinical;
 using MediFormManager.Domain.Entities.Components;
 using MediFormManager.Domain.Entities.Forms;
 using MediFormManager.Infrastructure.Persistence;
@@ -41,6 +42,8 @@ namespace MediFormManager.Infrastructure.Repositories
             return await _context.FormVersions
                 .Include(v => v.Components.Where(c => !c.IsDeleted))
                     .ThenInclude(c => c.Options.Where(o => !o.IsDeleted))
+                .Include(v => v.Components.Where(c => !c.IsDeleted))
+                    .ThenInclude(c => c.DataMappings.Where(m => !m.IsDeleted))
                 .Include(v => v.Rules.Where(r => !r.IsDeleted))
                     .ThenInclude(r => r.Conditions.Where(c => !c.IsDeleted))
                 .Include(v => v.Rules.Where(r => !r.IsDeleted))
@@ -116,6 +119,10 @@ namespace MediFormManager.Infrastructure.Repositories
             _context.FormComponents.Add(component);
         }
 
+        public void AddMapping(ComponentDataMapping mapping)
+        {
+            _context.ComponentDataMappings.Add(mapping);
+        }
 
     }
 }

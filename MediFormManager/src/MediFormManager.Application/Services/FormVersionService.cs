@@ -1,13 +1,14 @@
 ﻿using MediFormManager.Application.DTOs.Forms;
-using MediFormManager.Application.DTOs.FormVersions;
-using MediFormManager.Application.Interfaces.Repositories;
-using MediFormManager.Domain.Entities.Forms;
-using MediFormManager.Application.Exceptions;
 using MediFormManager.Application.DTOs.FormSchemas;
-using MediFormManager.Domain.Enums;
-using System.Reflection.Emit;
-using System.ComponentModel;
+using MediFormManager.Application.DTOs.FormVersions;
+using MediFormManager.Application.Exceptions;
+using MediFormManager.Application.Interfaces.Repositories;
+using MediFormManager.Domain.Entities.Clinical;
 using MediFormManager.Domain.Entities.Components;
+using MediFormManager.Domain.Entities.Forms;
+using MediFormManager.Domain.Enums;
+using System.ComponentModel;
+using System.Reflection.Emit;
 
 namespace MediFormManager.Application.Services
 {
@@ -16,10 +17,13 @@ namespace MediFormManager.Application.Services
         private readonly IFormVersionRepository _formVersionRepository;
         private readonly IFormRepository _formRepository;
 
-        public FormVersionService(IFormVersionRepository formVersionRepository, IFormRepository formRepository)
+        private readonly IDataDictionaryRepository _dataDictionaryRepository;
+
+        public FormVersionService(IFormVersionRepository formVersionRepository, IFormRepository formRepository, IDataDictionaryRepository dataDictionaryRepository)
         {
             _formVersionRepository = formVersionRepository;
             _formRepository = formRepository;
+            _dataDictionaryRepository = dataDictionaryRepository;
         }
 
         public async Task<IEnumerable<FormVersionDto>> GetByFormIdAsync(Guid formId)
@@ -92,7 +96,11 @@ namespace MediFormManager.Application.Services
                             Id = o.Id,
                             DisplayText = o.DisplayText,
                             Order = o.Order
-                        }).ToList()
+                        }).ToList(),
+                    DataDictionaryId = c.DataMappings
+                                        .Where(m => !m.IsDeleted)
+                                        .Select(m => (Guid?)m.DataDictionaryId)
+                                        .SingleOrDefault()
                 }).ToList(),
                 Rules = version.Rules.Select(r => new ComponentRuleDto
                 {
@@ -242,7 +250,9 @@ namespace MediFormManager.Application.Services
             ValidateRuleReferences(version, request);
 
             await ValidateComponentOwnershipAsync(version, request);
-            
+
+            await ValidateDataMappingsAsync(request);
+
             if (version.UpdatedAt != request.ExpectedUpdatedAt)
             {
                 throw new ConflictException(
@@ -250,6 +260,8 @@ namespace MediFormManager.Application.Services
             }
 
             SyncComponents(version, request);
+
+            SyncDataMappings(version, request);
 
             version.UpdatedAt = DateTime.UtcNow;
 
@@ -327,6 +339,17 @@ namespace MediFormManager.Application.Services
                         GroupKey = requested.GroupKey,
                         Order = requested.Order
                     };
+
+                    if (requested.DataDictionaryId is Guid dictionaryId)
+                    {
+                        newComponent.DataMappings.Add(new ComponentDataMapping
+                        {
+                            Id = Guid.NewGuid(),
+                            DataDictionaryId = dictionaryId,
+                            CreatedAt = DateTime.UtcNow,
+                            CreatedBy = "System"
+                        });
+                    }
 
                     _formVersionRepository.AddComponent(newComponent);
                     SyncOptions(newComponent, requested.Options ?? new());
@@ -470,6 +493,86 @@ namespace MediFormManager.Application.Services
                             $"Option '{option.Id}' belongs to another Component.");
                     }
                 }
+            }
+        }
+
+        private void SyncDataMappings(FormVersion version, SaveFormSchemaRequest request)
+        {
+            var now = DateTime.UtcNow;
+
+            foreach (var requested in request.Components)
+            {
+                var component = version.Components
+                    .FirstOrDefault(c => c.Id == requested.Id);
+
+                // new Component not exists in DB yet,
+                // might not be included in version.Components
+                if (component is null)
+                {
+                    continue;
+                }
+
+                var existingMapping = component.DataMappings
+                    .SingleOrDefault(m => !m.IsDeleted);
+
+                if (requested.DataDictionaryId is null)
+                {
+                    if (existingMapping is not null)
+                    {
+                        existingMapping.IsDeleted = true;
+                        existingMapping.UpdatedAt = now;
+                    }
+
+                    continue;
+                }
+
+                if (existingMapping is not null)
+                {
+                    if (existingMapping.DataDictionaryId != requested.DataDictionaryId.Value)
+                    {
+                        existingMapping.DataDictionaryId =
+                            requested.DataDictionaryId.Value;
+                        existingMapping.UpdatedAt = now;
+                    }
+
+                    continue;
+                }
+
+                var newMapping = new ComponentDataMapping
+                {
+                    Id = Guid.NewGuid(),
+                    FormComponentId = component.Id,
+                    DataDictionaryId = requested.DataDictionaryId.Value,
+                    CreatedAt = now,
+                    CreatedBy = "System"
+                };
+
+                _formVersionRepository.AddMapping(newMapping);
+            }
+
+            // delete Mapping logic in deleted Component
+            foreach (var component in version.Components.Where(c => c.IsDeleted))
+            {
+                foreach (var mapping in component.DataMappings.Where(m => !m.IsDeleted))
+                {
+                    mapping.IsDeleted = true;
+                    mapping.UpdatedAt = now;
+                }
+            }
+        }
+
+        private async Task ValidateDataMappingsAsync(SaveFormSchemaRequest request)
+        {
+            var ids = request.Components
+                .Where(c => c.DataDictionaryId.HasValue)
+                .Select(c => c.DataDictionaryId!.Value)
+                .Distinct()
+                .ToArray();
+
+            if (!await _dataDictionaryRepository.AreAllActiveAsync(ids))
+            {
+                throw new ArgumentException(
+                    "One or more DataDictionary entries are invalid or inactive.");
             }
         }
 

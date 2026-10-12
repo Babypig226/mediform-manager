@@ -26,7 +26,10 @@ namespace MediFormManager.Application.DTOs.FormSchemas
         public string? GroupKey { get; set; }
         public int Order { get; set; }
         public List<SaveComponentOptionDto> Options { get; set; } = new();
-    
+
+        // Data Mapping
+        public Guid? DataDictionaryId { get; set; }
+
     }
 
     public class SaveComponentOptionDto {

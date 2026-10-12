@@ -14,7 +14,7 @@ public class ComponentDataMappingConfiguration
         builder.HasKey(x => x.Id);
 
         builder.HasOne(x => x.FormComponent)
-            .WithMany()
+            .WithMany(c => c.DataMappings)
             .HasForeignKey(x => x.FormComponentId)
             .OnDelete(DeleteBehavior.Restrict);
 

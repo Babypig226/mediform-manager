@@ -1,8 +1,9 @@
-import {useState} from "react";
+import {useState, useEffect} from "react";
 import type {FormComponent, FormSchema, ComponentOption } from "../types/formSchema";
 import { FormField } from "../components/FormField";
 import { FormRenderer } from "../components/FormRenderer";
 import { getFormSchema, saveFormSchema } from "../services/formSchemaApi";
+import {getDataDictionary, type DataDictionaryItem} from "../services/dataDictionaryApi";
 
 interface FormDesignerPageProps{
     schema: FormSchema;
@@ -18,6 +19,29 @@ export default function FormDesignerPage({schema} : FormDesignerPageProps) {
     );
     const [isSaving, setIsSaving] = useState(false);
     const [saveMessage, setSaveMessage] = useState<string | null>(null);
+    const [dataDictionary, setDataDictionary] = useState<DataDictionaryItem[]>([]);
+    const [dictionaryError, setDictionaryError] = useState<string|null>(null);
+
+    useEffect(() => { let cancelled = false;
+        async function loadDictionary(){
+            try{
+                const items = await getDataDictionary();
+                if(!cancelled){
+                    setDataDictionary(items);
+                }
+            }catch(error){
+                if(!cancelled){
+                    setDictionaryError(
+                        error instanceof Error? error.message: "Failed to load data dictionary"
+                    );
+                }
+            }
+        }
+
+        void loadDictionary();
+
+        return () => {cancelled = true;};
+    }, []);
 
     function updateComponent(componentId: string, changes: Partial<FormComponent>){
         setDraftSchema(previous => ({...previous, 
@@ -41,7 +65,8 @@ export default function FormDesignerPage({schema} : FormDesignerPageProps) {
             isVisible: true,
             groupKey: null,
             order: Math.max(-1, ...draftSchema.components.map(c => c.order)) + 1,
-            options: []
+            options: [],
+            dataDictionaryId:null
         };
         setDraftSchema(previous => ({
             ...previous,
@@ -301,6 +326,46 @@ export default function FormDesignerPage({schema} : FormDesignerPageProps) {
                                     ↓ Down
                                 </button>
                             </div>
+                            <div className="property-field">
+                                <label htmlFor="component-data-mapping">
+                                    Data Mapping
+                                </label>
+
+                                {dictionaryError && (
+                                    <p role="alert">{dictionaryError}</p>
+                                )}
+
+                                <select
+                                    id="component-data-mapping"
+                                    value={selectedComponent.dataDictionaryId ?? ""}
+                                    onChange={e =>
+                                        updateComponent(selectedComponent.id, {
+                                            dataDictionaryId: e.target.value || null
+                                        })
+                                    }
+                                    disabled={dataDictionary.length === 0}
+                                >
+                                    <option value="">— No mapping —</option>
+
+                                    {dataDictionary.map(item => (
+                                        <option key={item.id} value={item.id}>
+                                            {item.displayName} ({item.dataKey})
+                                        </option>
+                                    ))}
+                                </select>
+
+                                <button
+                                    type="button"
+                                    disabled={!selectedComponent.dataDictionaryId}
+                                    onClick={() =>
+                                        updateComponent(selectedComponent.id, {
+                                            dataDictionaryId: null
+                                        })
+                                    }
+                                >
+                                    Clear Mapping
+                                </button>
+                            </div>
 
                                 <div className="property-field">
                                 <label htmlFor="component-label">Label</label>
@@ -400,6 +465,7 @@ export default function FormDesignerPage({schema} : FormDesignerPageProps) {
                                             
                                         </div>
                                     )}
+                                    
                             <button
                                                 type="button"
                                                 className="delete-component-button"

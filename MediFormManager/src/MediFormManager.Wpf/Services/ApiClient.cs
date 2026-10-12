@@ -7,6 +7,8 @@ public class ApiClient
 {
     private readonly HttpClient _httpClient;
 
+    public string? AccessToken { get; private set; }
+
     public ApiClient()
     {
         _httpClient = new HttpClient
@@ -19,6 +21,7 @@ public class ApiClient
 
     public void SetBearerToken(string token)
     {
+        AccessToken = token;
         _httpClient.DefaultRequestHeaders.Authorization =
             new AuthenticationHeaderValue("Bearer", token);
     }

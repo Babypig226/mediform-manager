@@ -81,6 +81,8 @@ builder.Services.AddScoped<IComponentDataMappingRepository, ComponentDataMapping
 
 builder.Services.AddScoped<ClinicalDataService>();
 
+builder.Services.AddScoped<IDataDictionaryRepository, DataDictionaryRepository>();
+
 builder.Services.AddSwaggerGen(options =>
 {
     const string schemeId = "Bearer";

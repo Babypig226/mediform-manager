@@ -1,9 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using MediFormManager.Domain.Entities.Clinical;
 using MediFormManager.Domain.Entities.Common;
 using MediFormManager.Domain.Entities.Forms;
 using MediFormManager.Domain.Enums;
+using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace MediFormManager.Domain.Entities.Components
 {
@@ -31,5 +32,7 @@ namespace MediFormManager.Domain.Entities.Components
 
         public ICollection<ComponentOption> Options { get; set; } = new List<ComponentOption>();
         public FormVersion? FormVersion { get; set; }
+
+        public ICollection<ComponentDataMapping> DataMappings { get; set; } = new List<ComponentDataMapping>();
     }
 }

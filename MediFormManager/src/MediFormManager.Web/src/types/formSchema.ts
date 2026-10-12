@@ -17,6 +17,7 @@ export interface FormComponent {
    placeholder: string | null;
    order: number;
    options: ComponentOption[];
+   dataDictionaryId: string | null;
 }
 
 export interface RuleCondition {

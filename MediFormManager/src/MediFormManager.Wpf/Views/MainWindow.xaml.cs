@@ -7,10 +7,16 @@ namespace MediFormManager.Wpf.Views;
 public partial class MainWindow : Window
 {
     private readonly MainViewModel _viewModel;
+    private readonly ApiClient _apiClient;
+
+    private readonly FormService _formService;
 
     public MainWindow(ApiClient apiClient)
     {
         InitializeComponent();
+
+        _apiClient = apiClient;
+        _formService = new FormService(apiClient);
 
         var userService = new UserService(apiClient);
     
@@ -34,10 +40,42 @@ public partial class MainWindow : Window
         MainContent.Content = new UsersView();
     }
 
-    private void DashboardButton_Click(
-    object sender,
-    RoutedEventArgs e)
+    private void DashboardButton_Click(object sender, RoutedEventArgs e)
     {
         MainContent.Content = new DashboardView();
     }
+
+    private void FormsButton_Click(object sender, RoutedEventArgs e)
+    {
+        ShowForms();
+    }
+
+    private void OnFormOpenRequested(Guid formVersionId, string mode)
+    {
+        if (formVersionId == Guid.Empty)
+            return;
+
+        if (mode is not ("designer" or "runtime"))
+            return;
+
+        var webView = new ReactWebView(
+         _apiClient,
+         formVersionId,
+         mode);
+
+        webView.BackRequested += ShowForms;
+
+        MainContent.Content = webView;
+    }
+
+    private void ShowForms()
+    {
+        var formsView = new FormsView(_formService);
+
+        formsView.FormOpenRequested += OnFormOpenRequested;
+
+        MainContent.Content = formsView;
+    }
+
+
 }

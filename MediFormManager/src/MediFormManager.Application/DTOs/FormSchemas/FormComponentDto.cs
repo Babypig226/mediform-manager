@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using MediFormManager.Domain.Enums;
+using MediFormManager.Domain.Entities.Clinical;
 
 namespace MediFormManager.Application.DTOs.FormSchemas
 {
@@ -19,5 +20,7 @@ namespace MediFormManager.Application.DTOs.FormSchemas
         public string? Placeholder { get; set; }
         public int Order { get; set; }      
         public List<ComponentOptionDto> Options { get; set; } = new List<ComponentOptionDto>();
+
+        public Guid? DataDictionaryId { get; set; }
     }
 }

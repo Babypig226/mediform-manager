@@ -1,4 +1,5 @@
-﻿using MediFormManager.Domain.Entities.Components;
+﻿using MediFormManager.Domain.Entities.Clinical;
+using MediFormManager.Domain.Entities.Components;
 using MediFormManager.Domain.Entities.Forms;
 
 namespace MediFormManager.Application.Interfaces.Repositories
@@ -25,5 +26,7 @@ namespace MediFormManager.Application.Interfaces.Repositories
         Task<bool> AnyOptionIdsExistAsync(IEnumerable<Guid> optionIds);
 
         void AddComponent(FormComponent component);
+
+        void AddMapping(ComponentDataMapping mapping);
     }
 }
