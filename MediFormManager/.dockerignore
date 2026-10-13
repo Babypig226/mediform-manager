@@ -1,0 +1,10 @@
+**/bin/
+**/obj/
+**/node_modules/
+**/.vs/
+**/.vscode/
+**/secrets.json
+.git/
+.env
+.env.*
+backups/

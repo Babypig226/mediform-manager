@@ -2,6 +2,7 @@
 .vs/
 **/bin/
 **/obj/
+**/backups/
 
 # User-specific files
 *.user
@@ -14,6 +15,7 @@ appsettings.Local.json
 # Environment variables
 .env
 .env.*
+!.env.example
 
 # Logs
 *.log

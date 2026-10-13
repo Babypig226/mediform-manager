@@ -1,196 +1,146 @@
 # MediForm Manager
 
-MediForm Manager is a portfolio project for managing the lifecycle of
-medical forms, including users, forms, versions, organizational
-relationships, and future deployment/mapping workflows.
+**Medical Form Lifecycle Management | ASP.NET Core · React · WPF · PostgreSQL**
 
-The project is designed as a practical backend-focused system based on
-experience maintaining medical information software.
+MediForm Manager is a portfolio project inspired by experience developing and maintaining hospital information software. It explores how medical consent forms can be managed as **versioned, metadata-driven definitions**, rather than as tightly coupled screens and documents.
 
-## Current Status
+The emphasis is on backend architecture, data modeling, form-version lifecycle, rule evaluation, and practical integration between a desktop management client and a web-based form designer.
 
-### Implemented
+> **Project status (October 2026):** V1 demonstration build. This is a portfolio prototype, **not a production-ready medical system**. Clinical values used in the demo come from a mock provider; no live hospital system is connected.
 
-- Clean Architecture-based solution structure
-- ASP.NET Core Web API with .NET 10
-- PostgreSQL and Entity Framework Core
-- Domain entities, relationships, Fluent API configurations, and EF Core migrations
-- User DTOs, repository contract/implementation, and application service
-- User management API: create, list, get by ID, update, activate/deactivate
-- Password hashing using ASP.NET Core `PasswordHasher`
-- JWT authentication and JWT Bearer authorization
-- Swagger / OpenAPI Bearer authentication support
-- End-to-end API verification against PostgreSQL
-- Form category seed data for standard medical form categories
-- Form management API: create, list, get by ID, update
-- Form version management API: create, list by form, get by ID, update status
-- Form version status validation (`Draft`, `Active`, `Archived`)
-- WPF login client integrated with the authentication API
-- JWT reuse for authenticated WPF API requests
-- WPF user list loaded from the protected User API and displayed in a DataGrid
-- Local development secrets separated from source control
+## Features
 
-### MVP Next Steps
+### Implemented and exercised
 
-- Enforce the single-active-version rule for form versions
-- Global API exception handling and consistent HTTP error responses
-- Form component management
-- Role/permission-based authorization
-- Audit logging
-- Expand the WPF management UI to form management
+- **Users and authentication:** user CRUD/activation, hashed passwords using ASP.NET Core `PasswordHasher`, JWT login, Bearer-protected API endpoints, and WPF login/logout flow.
+- **Form lifecycle:** medical form and version APIs, version history, and `Draft`, `Active`, `Archived` status model.
+- **Form designer:** React-based editor for form fields, labels, prompts, choices, ordering, and draft schema persistence.
+- **Versioned editing:** draft-only edits, server-side validation, and optimistic concurrency using an expected update timestamp.
+- **Dynamic runtime:** schema-driven form rendering, field validation, and conditional rules for visibility/required state and related interactions.
+- **Clinical data mapping (mock):** data-dictionary entries can be assigned to fields; a mock clinical provider supplies sample patient/encounter values for runtime prefilling.
+- **Desktop integration:** WPF Form Library and version selection launch React designer/runtime views through WebView2, with authentication handoff for the local demonstration environment.
+- **Containerized backend:** multi-stage Docker image for ASP.NET Core API and Docker Compose PostgreSQL 17 with a persistent named volume and health check.
+
+### Verified integration flows
+
+- WPF login → Form Library → select version → React designer/runtime → WPF logout and re-login.
+- Save and retrieve draft form schema, including field-to-dictionary mapping.
+- Docker Compose API + PostgreSQL: applied **six EF Core migrations**, restored sample development data, successfully logged in to obtain a JWT, and used it to retrieve a protected form through `GET /api/Forms`.
+
+**Scope note:** Docker testing covers the **API and PostgreSQL**. The WPF desktop client and Vite-based React UI have been run separately in the local development environment; they are **not packaged as a single containerized desktop distribution**.
 
 ## Architecture
 
-``` text
-Client (WPF)
-     |
-     | HTTP / JSON
-     v
-API
-     |
-     v
-Application
-     |
-     | Repository interfaces
-     v
-Infrastructure
-     |
-     | EF Core
-     v
-PostgreSQL
+```text
+WPF Desktop Client ──HTTP/JWT──> ASP.NET Core API
+       │                              │
+       └── WebView2 ──> React UI      ▼
+                                Application
+                               services + DTOs
+                               repository/provider
+                                  interfaces
+                                     ▲
+                                     │ implemented by
+                               Infrastructure
+                             EF Core / repositories
+                               / mock provider
+                                     │
+                                     ▼
+                                PostgreSQL
 
-Domain
-  ^
-  |
-Core business entities and rules
+Domain: entities and business concepts shared by core layers
 ```
 
-### Projects
+The HTTP call path and **compile-time dependency direction** are different: Application declares the abstractions it needs, and Infrastructure implements them. The API composes the dependencies. The goal is to keep application use cases independent of a specific persistence implementation.
 
--   **MediFormManager.Domain** --- Core domain entities and business
-    concepts. Independent of EF Core, PostgreSQL, HTTP, and UI.
--   **MediFormManager.Application** --- Application use cases, DTOs,
-    repository contracts, and application services.
--   **MediFormManager.Infrastructure** --- EF Core, `MediFormDbContext`,
-    repository implementations, entity configurations, and migrations.
--   **MediFormManager.Api** --- ASP.NET Core HTTP entry point:
-    controllers, dependency injection, authentication, Swagger, and
-    configuration.
--   **MediFormManager.Wpf** --- Desktop client that communicates with
-    the API over HTTP.
+### Solution projects
 
-## Key Design Decisions
+| Project | Responsibility |
+| --- | --- |
+| `MediFormManager.Domain` | Domain entities and concepts |
+| `MediFormManager.Application` | Use cases, DTOs, repository and provider interfaces |
+| `MediFormManager.Infrastructure` | EF Core DbContext, PostgreSQL configurations/migrations, implementations |
+| `MediFormManager.Api` | REST endpoints, authentication, dependency injection, configuration |
+| `MediFormManager.Wpf` | Windows desktop management client and WebView2 host |
+| `MediFormManager.Web` | React / TypeScript form designer and renderer |
 
-### Separate Domain from Infrastructure
+## Technology
 
-Domain models remain independent of database technology. Persistence
-changes should not require redesigning the core domain.
+C# / .NET 10 · ASP.NET Core Web API · EF Core · PostgreSQL 17 · JWT Bearer · WPF · WebView2 · React · TypeScript · Vite · Docker / Docker Compose
 
-### DTOs instead of exposing entities directly
+## Run the API and database with Docker
 
-API contracts are separated from persistence/domain entities. Internal
-fields such as password hashes are not exposed, and create/update/read
-models can evolve independently.
+**Requirements:** Docker Desktop with Linux containers and Docker Compose.
 
-### Repository abstraction
+These commands assume the working directory is `MediFormManager/` (the folder containing `Dockerfile`, `compose.yaml`, and `src/`).
 
-Repository contracts are defined in Application, while EF Core
-implementations belong to Infrastructure. Application logic depends on
-abstractions rather than database technology.
+1. Create a local `.env` file alongside `compose.yaml`:
 
-### Authentication and authorization
+   ```dotenv
+   POSTGRES_USER=mediform
+   POSTGRES_PASSWORD=<generate-a-strong-local-password>
+   POSTGRES_DB=mediform_manager
+   JWT_SECRET_KEY=<generate-a-long-random-secret>
+   ```
 
-User passwords are never stored as plaintext. Passwords are hashed using
-ASP.NET Core `PasswordHasher` before persistence.
+   This is an **example only**. Replace the placeholders locally. Never commit `.env`, database backups, or credentials. The Compose configuration maps PostgreSQL to `127.0.0.1:55432` and the API to `127.0.0.1:8080`.
 
-Authentication uses signed JWT access tokens. Protected API endpoints use
-ASP.NET Core Bearer authentication and `[Authorize]`.
+2. Start services:
 
-Inactive users cannot authenticate even when valid credentials are provided.
+   ```powershell
+   docker compose config --quiet
+   docker compose up -d --build
+   docker compose ps
+   ```
 
-### User lifecycle
+3. For a **fresh database**, apply EF Core migrations from the host using the Docker database connection (`127.0.0.1:55432`). The existing development workflow uses `dotnet-ef` and the Infrastructure project as the migration target. **Do not run a database update with the local User Secrets connection string accidentally pointing at another database.**
 
-Users are not physically deleted when they leave the organization
-because historical medical-form ownership and auditability must be
-preserved.
+4. To log in and query protected endpoints, provide an account through the application's existing user-creation/seed workflow or restore an **authorized, synthetic demo-only** PostgreSQL backup. Docker Compose does **not** create a default administrator account.
 
-`IsActive` represents whether an account can currently use the system.
+5. Check the API endpoint using `http://127.0.0.1:8080/api/Forms`. Without a JWT, `401 Unauthorized` is expected. After logging in at `POST /api/Auth/login` using JSON fields `loginId` and `password`, supply `Authorization: Bearer <accessToken>` to access protected routes.
 
-`IsDeleted` represents logical deletion and is separate from account
-availability.
+To stop services without removing the database volume:
 
-### Form versioning
-
-Forms and form versions are modeled separately so historical versions
-can be retained while forms evolve.
-
-New form versions are created in `Draft` status. Version status is currently
-restricted to `Draft`, `Active`, or `Archived`. Enforcement of a single active
-version per form is a planned MVP refinement.
-
-### WPF client integration
-
-The WPF client authenticates through the Web API, stores the returned JWT
-access token in the shared API client, and reuses it for protected requests.
-The initial desktop flow supports login and authenticated user-list retrieval.
-
-## Technology Stack
-
--   C#
--   .NET 10
--   ASP.NET Core Web API
--   Entity Framework Core
--   PostgreSQL
--   WPF
--   Swagger / OpenAPI
--   Git
-
-## Repository Structure
-
-``` text
-mediform-manager/
-├── .gitignore
-├── README.md
-├── docs/
-└── MediFormManager/
-    ├── MediFormManager.slnx
-    └── src/
-        ├── MediFormManager.Api/
-        ├── MediFormManager.Application/
-        ├── MediFormManager.Domain/
-        ├── MediFormManager.Infrastructure/
-        └── MediFormManager.Wpf/
+```powershell
+docker compose down
 ```
 
-## Local Configuration
+**Do not use `docker compose down -v` unless you intentionally want to delete the container database volume.**
 
-Sensitive values such as database passwords and JWT signing keys are not stored in the repository.
-For local development, sensitive configuration is stored using .NET User Secrets.
+### Local development configuration
 
-Example configuration keys:
+For the API launched directly through Visual Studio or `dotnet run`, sensitive values are kept in **.NET User Secrets** under `MediFormManager.Api`, using these keys:
 
 ```text
 ConnectionStrings:DefaultConnection
 Jwt:SecretKey
 ```
 
-Non-sensitive JWT configuration such as issuer and audience may remain in `appsettings.json`.
+`Jwt:Issuer` and `Jwt:Audience` are non-secret configuration settings. In Docker Compose the database connection and signing key are provided via environment variables instead; User Secrets are **not copied into the image**.
 
-## Roadmap
+Current WebView2 integration uses a local Vite development server, and the desktop client's configured API endpoint is the local HTTPS development API. The Docker API on port `8080` is an independently tested backend, not a drop-in replacement for the complete desktop development configuration.
 
--   Form components
--   Order-to-form mapping
--   Permission rules
--   Audit logging
--   Deployment scheduling
--   Expanded WPF form management UI
--   Docker
--   Cloud deployment
--   CI/CD
+## Design decisions
 
-## Project Goal
+- **Versioned schemas:** forms and versions are separate records so earlier definitions can be retained.
+- **Interface-based data access:** Application contracts are implemented by Infrastructure, supporting isolated service testing and technology-specific integrations.
+- **Metadata-driven rendering:** form behavior is described through persisted components, options, mappings, and rules rather than per-form UI code.
+- **Soft deletion:** retention-oriented domain modeling differentiates logical deletion from account activation.
+- **Secrets outside source control:** User Secrets for local .NET development and ignored `.env` settings for Docker.
 
-MediForm Manager is intended to demonstrate maintainable application
-architecture, database modeling, versioned medical-form management,
-authorization design, and separation of business logic from
-infrastructure rather than only CRUD operations.
+## Known limitations / next steps
+
+- Enforce and fully regression-test the **single-active-version-per-form** invariant.
+- Expand role- and form-level authorization; JWT authentication alone is not full RBAC.
+- Replace mock clinical values with a secure, configurable hospital-system integration layer (not yet connected to a real HIS/OCS/EMR).
+- Add audit trail, deployment workflow, medical-order-to-form mapping, and robust production error handling.
+- Harden logout/session management, WebView2 token exchange, TLS, secret storage, and deployment configuration before considering real users or data.
+- Package the web UI for a production-style run instead of relying on the Vite development server.
+
+## Documentation
+
+The repository also contains project overview, functional specification, and ERD documents. Some are **earlier V1 planning snapshots (August 2026)**; they describe intended scope and may not reflect the more recent React designer, rule engine, and Docker demonstration work. EF Core migrations and the current implementation are authoritative for the physical schema.
+
+## Intended use
+
+Educational and portfolio demonstration only. The project is an original redesign informed by professional domain experience; it does not include proprietary employer source code or real patient data. Do not connect it to production hospital systems or use it to process clinical data without a separate security, privacy, and regulatory review.

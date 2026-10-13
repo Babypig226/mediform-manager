@@ -1,5 +1,6 @@
 ﻿using MediFormManager.Wpf.Services;
 using Microsoft.Web.WebView2.Core;
+using System.Threading.Tasks;
 using System;
 using System.Text.Json;
 using System.Windows;
@@ -112,6 +113,25 @@ namespace MediFormManager.Wpf.Views
         private void BackToForms_Click(object sender, RoutedEventArgs e)
         {
             BackRequested?.Invoke();
+        }
+
+        public async Task ClearSessionAsync()
+        {
+            if (WebBrowser.CoreWebView2 is null)
+                return;
+
+            try
+            {
+                await WebBrowser.CoreWebView2.ExecuteScriptAsync(
+                    "sessionStorage.removeItem('accessToken');");
+
+                WebBrowser.CoreWebView2.Navigate("about:blank");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(
+                    $"Failed to clear WebView2 session: {ex.Message}");
+            }
         }
     }
 }

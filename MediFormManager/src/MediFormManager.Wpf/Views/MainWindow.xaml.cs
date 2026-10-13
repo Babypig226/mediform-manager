@@ -77,5 +77,29 @@ public partial class MainWindow : Window
         MainContent.Content = formsView;
     }
 
+    private async void LogoutButton_Click( object sender, RoutedEventArgs e)
+    {
+        var confirmation = MessageBox.Show(
+            "Are you sure you want to log out?",
+            "Logout",
+            MessageBoxButton.YesNo,
+            MessageBoxImage.Question);
+
+        if (confirmation != MessageBoxResult.Yes)
+            return;
+
+        if (MainContent.Content is ReactWebView webView)
+        {
+            await webView.ClearSessionAsync();
+        }
+
+        _apiClient.ClearBearerToken();
+
+        var loginWindow = new LoginWindow();
+        loginWindow.Show();
+
+        Close();
+    }
+
 
 }

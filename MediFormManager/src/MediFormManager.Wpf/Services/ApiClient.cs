@@ -25,4 +25,10 @@ public class ApiClient
         _httpClient.DefaultRequestHeaders.Authorization =
             new AuthenticationHeaderValue("Bearer", token);
     }
+
+    public void ClearBearerToken()
+    {
+        AccessToken = null;
+        _httpClient.DefaultRequestHeaders.Authorization = null;
+    }
 }
